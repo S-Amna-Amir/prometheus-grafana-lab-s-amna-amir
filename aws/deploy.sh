@@ -6,14 +6,13 @@ set -e
 ############################################################
 
 AWS_REGION="eu-north-1"
-AWS_ACCOUNT_ID="973759794702"
+AWS_ACCOUNT_ID="123456789123"
 ECR_REPO_NAME="ml-inference-api"
 ECR_URI="public.ecr.aws/v9s6o3o0/ml-inference-api"
-EC2_SSH_KEY="~/Desktop/MLOPS/Project/mlops-project-key.pem
-"
+EC2_SSH_KEY="~/Desktop/MLOPS/Project/mlops-project-key.pem"
+EC2_PUBLIC_IP="16.171.132.23"
 EC2_USER="ubuntu"   
-SERVICE_PORT=8000
-EC2_PUBLIC_IP= "16.171.132.23"
+SERVICE_PORT="8000"
 
 ############################################################
 # 

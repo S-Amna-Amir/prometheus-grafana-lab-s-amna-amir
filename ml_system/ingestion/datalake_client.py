@@ -80,14 +80,18 @@ class DataLakeClient:
                 # ------------------------
                 data = response.json()
 
-                if "records" not in data or "schema" not in data:
-                    logger.error("Invalid response format. Expected keys: records, schema.")
-                    raise ValueError("Invalid datalake response format.")
+                # If API returns a plain list, wrap it into the expected format
+                if isinstance(data, list):
+                    records = data
+                    schema = {"num_features": len(data[0]["features"])}
+                    return records, schema
 
-                logger.info(
-                    f"Fetched {len(data['records'])} records from datalake."
-                )
-                return data["records"], data["schema"]
+                # Else if it's already in dict format
+                if "records" in data and "schema" in data:
+                    return data["records"], data["schema"]
+
+                raise ValueError("Invalid datalake response format.")
+
 
             except requests.exceptions.RequestException as e:
                 logger.error(f"Network error while fetching datalake batch: {e}")
