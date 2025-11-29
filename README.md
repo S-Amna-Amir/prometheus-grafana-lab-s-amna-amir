@@ -26,3 +26,14 @@ docker-compose up -d
 
 ## License
 MIT
+
+## to catch data from datalake:
+python ml_system/ingestion/ingestion_loop.py
+
+## to train the model:
+python ml_system/ingestion/ingestion_loop.py
+
+## to deploy on AWS:
+./app/aws/deploy.sh
+
+

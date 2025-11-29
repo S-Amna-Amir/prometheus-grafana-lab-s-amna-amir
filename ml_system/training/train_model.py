@@ -44,10 +44,11 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------
 # Constants
 # ---------------------------------------------------------
-RAW_DATA_DIR = "data/raw"
-MODEL_PATH = "model.joblib"
-SCALER_PATH = "scaler.joblib"
-FEATURE_LIST_PATH = "feature_list.json"
+RAW_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data/raw")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "model.joblib")
+SCALER_PATH = os.path.join(os.path.dirname(__file__), "..", "scaler.joblib")
+FEATURE_LIST_PATH = os.path.join(os.path.dirname(__file__), "..", "feature_list.json")
+
 
 MIN_ACCURACY = 0.80
 MAX_RETRIES = 5

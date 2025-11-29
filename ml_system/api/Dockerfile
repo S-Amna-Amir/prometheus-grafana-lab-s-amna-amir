@@ -1,14 +1,13 @@
 # -----------------------------------------------------------
-# Base Image (Small Footprint Python + Required Libs)
+# Base Image
 # -----------------------------------------------------------
 FROM python:3.11-slim AS base
 
-# Prevent Python from writing .pyc files & enable unbuffered logs
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # -----------------------------------------------------------
-# System Dependencies
+# Install system libs
 # -----------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -16,34 +15,36 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------
-# Working Directory
+# Working directory
 # -----------------------------------------------------------
 WORKDIR /app
 
 # -----------------------------------------------------------
-# Copy Requirements First (Allows Docker Layer Caching)
+# Copy requirements
+# (the requirements.txt is inside ml_system/api)
 # -----------------------------------------------------------
-COPY requirements.txt .
+COPY ml_system/api/requirements.txt .
 
-# -----------------------------------------------------------
-# Install Python Dependencies
-# -----------------------------------------------------------
 RUN pip install --no-cache-dir -r requirements.txt
 
 # -----------------------------------------------------------
-# Copy Application Files
+# Copy application code
 # -----------------------------------------------------------
-COPY main.py .
+COPY ml_system/api/main.py .
+
+# -----------------------------------------------------------
+# Copy ML artifacts from project root
+# -----------------------------------------------------------
 COPY model.joblib .
 COPY scaler.joblib .
 COPY feature_list.json .
 
 # -----------------------------------------------------------
-# Expose FastAPI Port
+# Expose port
 # -----------------------------------------------------------
 EXPOSE 8000
 
 # -----------------------------------------------------------
-# Default command (Uvicorn Server)
+# Start API server
 # -----------------------------------------------------------
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
