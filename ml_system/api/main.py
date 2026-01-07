@@ -2,8 +2,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import numpy as np
 import joblib
-from prometheus_client import start_http_server, Counter, Gauge, generate_latest
+import time
+from prometheus_client import start_http_server, generate_latest
 from fastapi.responses import Response
+from ml_system.metrics import (
+    PREDICTIONS,
+    MODEL_READY,
+    MODEL_ACCURACY,
+    RETRAIN_COUNT,
+    RESPONSE_DELAY
+)
 
 MODEL_PATH = "model.joblib"
 SCALER_PATH = "scaler.joblib"
@@ -11,12 +19,9 @@ SCALER_PATH = "scaler.joblib"
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
 
-app = FastAPI(title="Inference API")
-
-PREDICTIONS = Counter("predictions_total", "Total predictions served")
-MODEL_READY = Gauge("model_ready", "1 if model loaded")
-
 MODEL_READY.set(1)
+
+app = FastAPI(title="Inference API")
 
 
 class Record(BaseModel):
@@ -25,9 +30,11 @@ class Record(BaseModel):
 
 @app.post("/predict")
 def predict(record: Record):
+    start_time = time.time()
     X = scaler.transform(np.array(record.features).reshape(1, -1))
     pred = model.predict(X)[0]
     PREDICTIONS.inc()
+    RESPONSE_DELAY.set(time.time() - start_time)
     return {"prediction": int(pred)}
 
 

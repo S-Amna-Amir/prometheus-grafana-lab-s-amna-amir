@@ -3,9 +3,15 @@ import json
 import time
 import logging
 import numpy as np
-from prometheus_client import Counter, Gauge, start_http_server
+from prometheus_client import start_http_server
 from ml_system.ingestion.datalake_client import DataLakeClient
-
+from ml_system.metrics import (
+    RECORDS_PROCESSED,
+    FEATURE_ADDED,
+    FEATURE_REMOVED,
+    DRIFT_DETECTED,
+    DATALAKE_UNAVAILABLE
+)
 
 logging.basicConfig(
     filename="ingestion_loop.log",
@@ -17,13 +23,7 @@ logger = logging.getLogger(__name__)
 DATA_DIR = "data/raw"
 SCHEMA_FILE = "schema.json"
 STATS_FILE = "stats.json"
-
 os.makedirs(DATA_DIR, exist_ok=True)
-
-RECORDS_PROCESSED = Counter("records_processed_total", "Records ingested")
-FEATURE_ADDED = Counter("feature_added_total", "Feature additions")
-FEATURE_REMOVED = Counter("feature_removed_total", "Feature removals")
-DRIFT_DETECTED = Gauge("distribution_drift_detected", "1 if drift detected")
 
 
 def compute_stats(records):
@@ -47,7 +47,6 @@ def detect_drift(old, new, threshold=3.0):
 def run():
     start_http_server(9100)
     client = DataLakeClient()
-
     schema = {}
     stats = {}
     batch_id = 0
@@ -83,15 +82,17 @@ def run():
             batch_id += 1
 
         except ConnectionError as e:
+            DATALAKE_UNAVAILABLE.inc()
             logger.critical(f"Fatal ingestion error: {e}")
             print(f"Fatal ingestion error: {e}")
-            break   # ⬅️ STOP THE LOOP
+            break
 
         except Exception as e:
-            print(f"Non-fatal ingestion error: {e}")
             logger.error(f"Non-fatal ingestion error: {e}")
+            print(f"Non-fatal ingestion error: {e}")
 
         time.sleep(5)
+
 
 if __name__ == "__main__":
     run()

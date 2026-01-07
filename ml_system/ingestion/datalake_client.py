@@ -1,28 +1,17 @@
 import time
 import logging
 import requests
-from prometheus_client import Counter
-
-DATALAKE_503 = Counter(
-    "datalake_503_total",
-    "Number of times datalake returned HTTP 503"
-)
+from ml_system.metrics import DATALAKE_UNAVAILABLE
 
 logging.basicConfig(
     filename="datalake_client.log",
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
-
 logger = logging.getLogger(__name__)
 
 
 class DataLakeClient:
-    """
-    Single, enforced ingestion client.
-    ONLY allowed endpoint: /records
-    """
-
     ENDPOINT = "http://149.40.228.124:6500/records"
 
     def __init__(self, timeout: int = 5):
@@ -32,9 +21,8 @@ class DataLakeClient:
         for attempt in range(retries):
             try:
                 resp = requests.get(self.ENDPOINT, timeout=self.timeout)
-
                 if resp.status_code == 503:
-                    DATALAKE_503.inc()
+                    DATALAKE_UNAVAILABLE.inc()
                     logger.warning("503 from datalake — retrying")
                     time.sleep(backoff ** attempt)
                     continue
@@ -43,8 +31,10 @@ class DataLakeClient:
                 return resp.json()
 
             except requests.RequestException as e:
+                DATALAKE_UNAVAILABLE.inc()
                 logger.error(f"Datalake request failed: {e}")
                 time.sleep(backoff ** attempt)
 
         logger.critical("Datalake unavailable after retries")
+        DATALAKE_UNAVAILABLE.inc()
         raise ConnectionError("Datalake unreachable")
