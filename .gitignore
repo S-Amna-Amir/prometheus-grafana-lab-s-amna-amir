@@ -2,3 +2,5 @@ data/
 datalake_client.log
 training.log
 venv/
+mlops-key.pem
+mlops-key.pem:Zone.Identifier
