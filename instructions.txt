@@ -1,0 +1,7 @@
+source venv/bin/activate
+pip install -r requirements.txt
+
+for ingestion:
+python -m ml_system.ingestion.ingestion_loop
+
+for training:
