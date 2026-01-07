@@ -1,0 +1,59 @@
+{
+  "id": null,
+  "title": "ML System Metrics",
+  "tags": ["ml", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "Model Accuracy",
+      "gridPos": {"x":0,"y":0,"w":6,"h":4},
+      "targets": [{"expr": "model_accuracy"}],
+      "fieldConfig": {"defaults":{"min":0,"max":1,"unit":"percent"}}
+    },
+    {
+      "type": "graph",
+      "title": "Records Processed",
+      "gridPos": {"x":6,"y":0,"w":6,"h":4},
+      "targets": [{"expr": "records_processed_total"}]
+    },
+    {
+      "type": "gauge",
+      "title": "Distribution Drift Detected",
+      "gridPos": {"x":0,"y":4,"w":6,"h":4},
+      "targets": [{"expr": "distribution_drift_detected"}],
+      "fieldConfig": {"defaults":{"min":0,"max":1}}
+    },
+    {
+      "type": "gauge",
+      "title": "Datalake Unavailable",
+      "gridPos": {"x":6,"y":4,"w":6,"h":4},
+      "targets": [{"expr": "datalake_unavailable"}],
+      "fieldConfig": {"defaults":{"min":0,"max":10}}
+    },
+    {
+      "type": "graph",
+      "title": "Retrain Count",
+      "gridPos": {"x":0,"y":8,"w":6,"h":4},
+      "targets": [{"expr": "retrain_count_total"}]
+    },
+    {
+      "type": "graph",
+      "title": "Prediction Response Delay (s)",
+      "gridPos": {"x":6,"y":8,"w":6,"h":4},
+      "targets": [{"expr": "response_delay_seconds"}]
+    },
+    {
+      "type": "graph",
+      "title": "Feature Changes",
+      "gridPos": {"x":0,"y":12,"w":12,"h":4},
+      "targets": [
+        {"expr": "feature_added_total", "legendFormat":"Features Added"},
+        {"expr": "feature_removed_total", "legendFormat":"Features Removed"}
+      ]
+    }
+  ]
+}
