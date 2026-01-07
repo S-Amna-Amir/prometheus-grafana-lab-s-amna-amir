@@ -1,0 +1,20 @@
+groups:
+  - name: ml_alerts
+    rules:
+      - alert: ModelAccuracyLow
+        expr: model_accuracy < 0.8
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model accuracy is below 0.8"
+          description: "Accuracy metric dropped below threshold"
+
+      - alert: DatalakeUnavailable
+        expr: datalake_unavailable > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Datalake unavailable"
+          description: "Data lake endpoint returned 503 or is unreachable"

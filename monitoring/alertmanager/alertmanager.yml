@@ -1,0 +1,18 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: "https://hooks.slack.com/services/XXXX/YYYY/ZZZZ" # replace with your Slack webhook
+
+route:
+  receiver: "slack-notifications"
+
+receivers:
+  - name: "slack-notifications"
+    slack_configs:
+      - channel: "#ml-alerts"
+        send_resolved: true
+
+# optional: grouping alerts
+group_by: ["alertname"]
+group_wait: 30s
+group_interval: 5m
+repeat_interval: 1h

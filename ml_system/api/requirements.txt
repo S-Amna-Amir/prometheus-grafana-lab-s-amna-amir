@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-requests
-numpy
-scikit-learn
-joblib
-prometheus-client
